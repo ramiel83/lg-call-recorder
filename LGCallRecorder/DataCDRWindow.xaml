@@ -1,0 +1,57 @@
+﻿<Page x:Class="LGCallRecorder.DataCDRWindow"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:LGCallRecorder"
+      mc:Ignorable="d"
+      d:DesignHeight="500" d:DesignWidth="900"
+      Title="DataCDRWindow">
+
+    <Grid Background="#FFA9CEF0">
+        <DataGrid x:Name="dataGrid" Height="317" Margin="15,7,15,0" VerticalAlignment="Top"
+                  Loaded="dataGrid_WindowLoaded" Background="#FFD8E5F5" BorderBrush="#FF0C3053" />
+        <Label x:Name="filterLabel" Content=":הצגת נתוני שיחה עבור טווח שלוחות" Margin="623,342,-10,0"
+               VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="16" HorizontalAlignment="Left" Width="287"
+               Foreground="#FF666262" />
+        <TextBox x:Name="numForFilterTextBox1" HorizontalAlignment="Left" Height="29" Margin="535,341,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="69" RenderTransformOrigin="0.5,0.5" />
+        <TextBox x:Name="numForFilterTextBox2" HorizontalAlignment="Left" Height="29" Margin="431,341,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="66" RenderTransformOrigin="0.5,0.5" />
+        <Button x:Name="DisplayButton" Content="הצג נתונים" HorizontalAlignment="Left" Margin="305,339,0,0"
+                VerticalAlignment="Top" Width="109" FontSize="18" FontFamily="Segoe UI Black" Height="37"
+                FontWeight="Bold" Click="displayPressed" Foreground="#FF666262" />
+        <TextBox x:Name="sumAllCallsTextBox" HorizontalAlignment="Left" Height="29" Margin="603,387,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="135" RenderTransformOrigin="0.502,0.181" />
+        <TextBox x:Name="sumIncomingCallsTextBox" HorizontalAlignment="Left" Height="29" Margin="603,425,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="135" />
+        <TextBox x:Name="sumOutgoingCallsTextBox" HorizontalAlignment="Left" Margin="603,461,0,0" TextWrapping="Wrap"
+                 Width="135" Height="29" VerticalAlignment="Top" />
+        <TextBox x:Name="amountIncomingCallsTextBox" HorizontalAlignment="Left" Height="29" Margin="290,391,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="135" />
+        <TextBox x:Name="amountOutgoingCallsTextBox" HorizontalAlignment="Left" Height="29" Margin="290,425,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="135" />
+        <Label x:Name="sumIncomingCallsLabel" Content=":משך שיחות נכנסות" HorizontalAlignment="Left"
+               Margin="743,421,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="16" Width="150"
+               Foreground="#FF666262" />
+        <Label x:Name="sumAllCallsLable" Content=":משך כל השיחות " HorizontalAlignment="Left" Margin="764,389,0,0"
+               VerticalAlignment="Top" RenderTransformOrigin="-0.196,0.465" FontSize="16" FontFamily="Segoe UI Black"
+               Width="135" Foreground="#FF666262" />
+        <Label x:Name="sumOutcomingCallsLabel" Content=":משך שיחות יוצאות " HorizontalAlignment="Left"
+               Margin="746,457,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="16" Width="149"
+               RenderTransformOrigin="0.732,0.445" Foreground="#FF666262" />
+        <Label x:Name="AmountIncomingCallsLabel" Content=":כמות שיחות נכנסות " HorizontalAlignment="Left"
+               Margin="431,387,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="16"
+               RenderTransformOrigin="1.77,0.486" Width="159" Foreground="#FF666262" />
+        <Label x:Name="amountoutcomingCallsLabel" Content=":כמות שיחות יוצאות" HorizontalAlignment="Left"
+               Margin="435,421,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="16" Width="164"
+               Foreground="#FF666262" />
+
+
+        <Label x:Name="toLabel" Content="עד" HorizontalAlignment="Left" Margin="507,343,0,0" VerticalAlignment="Top"
+               FontFamily="Segoe UI Black" Width="28" FontSize="16" Foreground="#FF666262" />
+        <Button x:Name="exportToCsvButton" Content="יצא לקובץ אקסל (CSV)" HorizontalAlignment="Left"
+                Margin="15,339,0,0" VerticalAlignment="Top" Width="170" Height="37" Click="exportToCsvButton_Click" />
+
+    </Grid>
+</Page>

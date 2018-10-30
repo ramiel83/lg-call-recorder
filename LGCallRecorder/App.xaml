@@ -1,0 +1,19 @@
+﻿<Application x:Class="LGCallRecorder.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LGCallRecorder"
+             StartupUri="DownloadCDRWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/BureauBlue.xaml" />
+                <!--<ResourceDictionary Source="Themes/BureauBlack.xaml" />
+                <ResourceDictionary Source="Themes/BureauBlue.xaml" />
+                <ResourceDictionary Source="Themes/ShinyBlue.xaml" />
+                <ResourceDictionary Source="Themes/WhistlerBlue.xaml" />
+                <ResourceDictionary Source="Themes/ShinyRed.xaml" />
+                <ResourceDictionary Source="Themes/BureauBlack.xaml" />-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
