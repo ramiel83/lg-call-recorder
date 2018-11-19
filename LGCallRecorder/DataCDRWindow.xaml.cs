@@ -20,13 +20,18 @@ namespace LGCallRecorder
         private readonly DataTable dt = new DataTable();
         private readonly IEnumerable<CallRecord> records;
 
+
         public DataCDRWindow(IEnumerable<CallRecord> records)
         {
             this.records = records;
+
             InitializeComponent();
         }
 
         private void FillingCallRecorderTable()
+
+            #region column
+
         {
             DataColumn id = new DataColumn("Id", typeof(int));
             dt.Columns.Add(id);
@@ -61,97 +66,206 @@ namespace LGCallRecorder
             DataColumn Group = new DataColumn("Group", typeof(string));
             dt.Columns.Add(Group);
 
+            #endregion
+
+            bool areEqual;
             int index = 0;
             int incomingCallsAmount = 0;
             int outcomingCallsAmount = 0;
+            int amountUnansweredCalls = 0;
             TimeSpan allCallsDuration = new TimeSpan();
             TimeSpan incomingDuration = new TimeSpan();
             TimeSpan outcomingDuration = new TimeSpan();
+            //All are empty and dates are selected
+            if (string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
+                string.IsNullOrWhiteSpace(numForFilterTextBox2.Text) &&
+                string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text))
+                foreach (CallRecord cr in records)
+                    if (!string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                        !string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                        if (cr.Start.Ticks > DateTime.Parse(DatePickerFrom.Text).Ticks &&
+                            cr.Start.Ticks < DateTime.Parse(DatePickerTO.Text).Ticks||
+                            (areEqual = cr.Start.Date == DateTime.Parse(DatePickerFrom.Text).Date)||
+                            (areEqual = cr.Start.Date == DateTime.Parse(DatePickerTO.Text).Date))
 
-            foreach (CallRecord cr in records)
-            {
-                if (string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
-                    string.IsNullOrWhiteSpace(numForFilterTextBox2.Text))
-                {
-                    index++;
-                    DataRow currentRow;
-                    currentRow = dt.NewRow();
-                    currentRow[0] = index;
-                    currentRow[1] = cr.StationNumber;
-                    currentRow[2] = cr.CO;
-                    currentRow[3] = cr.Duration;
-                    currentRow[4] = cr.Start.ToString(new CultureInfo("he-IL"));
-                    currentRow[5] = cr.CallType.ToString();
-                    currentRow[6] = cr.Dialed;
-                    currentRow[7] = cr.Cost;
-                    currentRow[8] = cr.AccountCode;
-                    currentRow[9] = cr.DisconnectCause.ToString();
-                    currentRow[10] = GetGroupName(cr);
-                    dt.Rows.Add(currentRow);
+                            fillRowsAndDataField(ref index, ref incomingCallsAmount, ref outcomingCallsAmount,
+                                ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                ref amountUnansweredCalls,
+                                cr);
 
-                    if (currentRow[5].Equals("Incoming"))
-                    {
-                        incomingCallsAmount++;
-                        incomingDuration = incomingDuration.Add(cr.Duration);
-                    }
-
-                    if (currentRow[5].Equals("Outgoing"))
-                    {
-                        outcomingCallsAmount++;
-                        outcomingDuration = outcomingDuration.Add(cr.Duration);
-                    }
-
-                    allCallsDuration = allCallsDuration.Add(cr.Duration);
-                }
-
-                if (!string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
-                    !string.IsNullOrWhiteSpace(numForFilterTextBox2.Text))
+            //All are empty and no dates are selected
+            if (string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
+                string.IsNullOrWhiteSpace(numForFilterTextBox2.Text) &&
+                string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text) &&
+                string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    fillRowsAndDataField(ref index, ref incomingCallsAmount, ref outcomingCallsAmount,
+                        ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                        ref amountUnansweredCalls,
+                        cr);
+            //Extensions and date are selected 
+            if (!string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(numForFilterTextBox2.Text) &&
+                !string.IsNullOrWhiteSpace(DatePickerFrom.Text) && !string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
                     if (int.Parse(numForFilterTextBox1.Text) <= cr.StationNumber &&
                         cr.StationNumber <= int.Parse(numForFilterTextBox2.Text))
-                    {
-                        index++;
-                        DataRow currentRow;
-                        currentRow = dt.NewRow();
-                        currentRow[0] = index;
-                        currentRow[1] = cr.StationNumber;
-                        currentRow[2] = cr.CO;
-                        currentRow[3] = cr.Duration;
-                        currentRow[4] = cr.Start;
-                        currentRow[5] = cr.CallType.ToString();
-                        currentRow[6] = cr.Dialed;
-                        currentRow[7] = cr.Cost;
-                        currentRow[8] = cr.AccountCode;
-                        currentRow[9] = cr.DisconnectCause.ToString();
-                        dt.Rows.Add(currentRow);
-
-                        if (currentRow[5].Equals("Incoming"))
-                        {
-                            incomingCallsAmount++;
-                            incomingDuration = incomingDuration.Add(cr.Duration);
-                        }
-
-                        if (currentRow[5].Equals("Outgoing"))
-                        {
-                            outcomingCallsAmount++;
-                            outcomingDuration = outcomingDuration.Add(cr.Duration);
-                        }
-
-                        allCallsDuration = allCallsDuration.Add(cr.Duration);
-                    }
-            }
+                        if (cr.Start.Ticks > DateTime.Parse(DatePickerFrom.Text).Ticks &&
+                            cr.Start.Ticks < DateTime.Parse(DatePickerTO.Text).Ticks ||
+                            (areEqual = cr.Start.Date == DateTime.Parse(DatePickerFrom.Text).Date) ||
+                            (areEqual = cr.Start.Date == DateTime.Parse(DatePickerTO.Text).Date))
+                            fillRowsAndDataField(ref index, ref incomingCallsAmount, ref outcomingCallsAmount,
+                                ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                ref amountUnansweredCalls, cr);
+            //Only extensions are selected 
+            if (!string.IsNullOrWhiteSpace(numForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(numForFilterTextBox2.Text) &&
+                string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    if (int.Parse(numForFilterTextBox1.Text) <= cr.StationNumber &&
+                        cr.StationNumber <= int.Parse(numForFilterTextBox2.Text))
+                        fillRowsAndDataField(ref index, ref incomingCallsAmount, ref outcomingCallsAmount,
+                            ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                            ref amountUnansweredCalls, cr);
+            //Groups and date are selected -refer to Dialed
+            if (!string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text) &&
+                !string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                !string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    if (!string.IsNullOrWhiteSpace(cr.Dialed))
+                        if (CheckIfGroup(cr.Dialed))
+                            if (int.Parse(groupForFilterTextBox1.Text) <= int.Parse(cr.Dialed.Split(' ')[0]) &&
+                                int.Parse(cr.Dialed.Split(' ')[0]) <= int.Parse(groupForFilterTextBox2.Text))
+                                if (cr.Start.Ticks > DateTime.Parse(DatePickerFrom.Text).Ticks &&
+                                    cr.Start.Ticks < DateTime.Parse(DatePickerTO.Text).Ticks ||
+                                    (areEqual = cr.Start.Date == DateTime.Parse(DatePickerFrom.Text).Date) ||
+                                    (areEqual = cr.Start.Date == DateTime.Parse(DatePickerTO.Text).Date))
+                                    fillRowsAndDataField(ref index, ref incomingCallsAmount,
+                                        ref outcomingCallsAmount,
+                                        ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                        ref amountUnansweredCalls, cr);
+            //Only Groups are selected-refer to Dialed
+            if (!string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text) &&
+                 string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                 string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    if (!string.IsNullOrWhiteSpace(cr.Dialed))
+                        if (CheckIfGroup(cr.Dialed))
+                            if (int.Parse(groupForFilterTextBox1.Text) <= int.Parse(cr.Dialed.Split(' ')[0]) &&
+                                int.Parse(cr.Dialed.Split(' ')[0]) <= int.Parse(groupForFilterTextBox2.Text))
+                                    fillRowsAndDataField(ref index, ref incomingCallsAmount,
+                                        ref outcomingCallsAmount,
+                                        ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                        ref amountUnansweredCalls, cr);
+            //Groups and date are selected -refer to AccountCode
+            if (!string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text) &&
+                !string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                !string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    if (!string.IsNullOrWhiteSpace(cr.AccountCode))
+                        if (CheckIfGroup(cr.AccountCode))
+                            if (int.Parse(groupForFilterTextBox1.Text) <= int.Parse(cr.AccountCode.Split(' ')[0]) &&
+                                int.Parse(cr.AccountCode.Split(' ')[0]) <= int.Parse(groupForFilterTextBox2.Text))
+                                if (cr.Start.Ticks > DateTime.Parse(DatePickerFrom.Text).Ticks &&
+                                    cr.Start.Ticks < DateTime.Parse(DatePickerTO.Text).Ticks ||
+                                    (areEqual = cr.Start.Date == DateTime.Parse(DatePickerFrom.Text).Date) ||
+                                    (areEqual = cr.Start.Date == DateTime.Parse(DatePickerTO.Text).Date))
+                                    fillRowsAndDataField(ref index, ref incomingCallsAmount,
+                                    ref outcomingCallsAmount,
+                                    ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                    ref amountUnansweredCalls, cr);
+            //Only Groups are selected -refer to AccountCode
+            if (!string.IsNullOrWhiteSpace(groupForFilterTextBox1.Text) &&
+                !string.IsNullOrWhiteSpace(groupForFilterTextBox2.Text) &&
+                 string.IsNullOrWhiteSpace(DatePickerFrom.Text) &&
+                 string.IsNullOrWhiteSpace(DatePickerTO.Text))
+                foreach (CallRecord cr in records)
+                    if (!string.IsNullOrWhiteSpace(cr.AccountCode))
+                        if (CheckIfGroup(cr.AccountCode))
+                            if (int.Parse(groupForFilterTextBox1.Text) <= int.Parse(cr.AccountCode.Split(' ')[0]) &&
+                                int.Parse(cr.AccountCode.Split(' ')[0]) <= int.Parse(groupForFilterTextBox2.Text))
+                                fillRowsAndDataField(ref index, ref incomingCallsAmount,
+                                    ref outcomingCallsAmount,
+                                    ref allCallsDuration, ref incomingDuration, ref outcomingDuration,
+                                    ref amountUnansweredCalls, cr);
 
 
             dataGrid.ItemsSource = dt.DefaultView;
             amountIncomingCallsTextBox.Text = incomingCallsAmount.ToString();
             amountOutgoingCallsTextBox.Text = outcomingCallsAmount.ToString();
+            amountUnansweredCallsTextBox.Text = amountUnansweredCalls.ToString();
             sumAllCallsTextBox.Text = allCallsDuration.ToString();
             sumIncomingCallsTextBox.Text = incomingDuration.ToString();
             sumOutgoingCallsTextBox.Text = outcomingDuration.ToString();
+            amountAllCallsTextBox.Text = index.ToString();
+        }
+
+        public void fillRowsAndDataField(ref int index, ref int incomingCallsAmount, ref int outcomingCallsAmount,
+            ref TimeSpan allCallsDuration, ref TimeSpan incomingDuration, ref TimeSpan outcomingDuration,
+            ref int amountUnansweredCalls, CallRecord cr)
+        {
+            index++;
+            DataRow currentRow;
+            currentRow = dt.NewRow();
+            currentRow[0] = index;
+            currentRow[1] = cr.StationNumber;
+            currentRow[2] = cr.CO;
+            currentRow[3] = cr.Duration;
+            currentRow[4] = cr.Start.ToString(new CultureInfo("he-IL"));
+            currentRow[5] = cr.CallType.ToString();
+            currentRow[6] = cr.Dialed;
+            currentRow[7] = cr.Cost;
+            currentRow[8] = cr.AccountCode;
+            currentRow[9] = cr.DisconnectCause.ToString();
+            currentRow[10] = GetGroupName(cr);
+            dt.Rows.Add(currentRow);
+
+            if (currentRow[5].Equals("Incoming"))
+            {
+                incomingCallsAmount++;
+                incomingDuration = incomingDuration.Add(cr.Duration);
+            }
+
+            if (currentRow[5].Equals("Transferd"))
+            {
+                incomingCallsAmount++;
+                incomingDuration = incomingDuration.Add(cr.Duration);
+            }
+
+            if (currentRow[5].Equals("Hold"))
+            {
+                incomingCallsAmount++;
+                incomingDuration = incomingDuration.Add(cr.Duration);
+            }
+
+            if (currentRow[5].Equals("Unknown"))
+            {
+                incomingCallsAmount++;
+                incomingDuration = incomingDuration.Add(cr.Duration);
+            }
+
+
+            if (currentRow[5].Equals("Ring") || currentRow[5].Equals("Group")) amountUnansweredCalls++;
+
+            if (currentRow[5].Equals("Outgoing"))
+            {
+                outcomingCallsAmount++;
+                outcomingDuration = outcomingDuration.Add(cr.Duration);
+            }
+
+            allCallsDuration = allCallsDuration.Add(cr.Duration);
         }
 
         private string GetGroupName(CallRecord cr)
         {
-            if (cr.CallType != CallType.Group) return string.Empty;
+            //  if (cr.CallType != CallType.Group) return string.Empty;
 
             string groupName = GetGroupNameByField(cr.Dialed);
             if (groupName != null) return groupName;
@@ -168,6 +282,15 @@ namespace LGCallRecorder
             string configurationKey = "Group_" + groupId;
             string groupName = ConfigurationManager.AppSettings[configurationKey];
             return groupName;
+        }
+
+        private static bool CheckIfGroup(string field)
+        {
+            string groupId = field.Split(' ')[0];
+            string configurationKey = "Group_" + groupId;
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings[configurationKey]))
+                return true;
+            return false;
         }
 
         private void dataGrid_WindowLoaded(object sender, RoutedEventArgs e)
@@ -189,12 +312,14 @@ namespace LGCallRecorder
             if (saveFileDialog.ShowDialog() != true) return;
 
             StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("\"משך כל השיחות:\",\"" + sumAllCallsTextBox.Text + "\"");
-            sb.AppendLine("\"משך שיחות נכנסות:\",\"" + sumIncomingCallsTextBox.Text + "\"");
-            sb.AppendLine("\"משך שיחות יוצאות:\",\"" + sumOutgoingCallsTextBox.Text + "\"");
             sb.AppendLine("\"כמות שיחות נכנסות:\",\"" + amountIncomingCallsTextBox.Text + "\"");
             sb.AppendLine("\"כמות שיחות יוצאות:\",\"" + amountOutgoingCallsTextBox.Text + "\"");
+            sb.AppendLine("\"כמות שיחות לא נענות:\",\"" + amountUnansweredCallsTextBox.Text + "\"");
+            sb.AppendLine("\"כמות כל השיחות:\",\"" + amountAllCallsTextBox.Text + "\"");
+            sb.AppendLine("\"משך שיחות נכנסות:\",\"" + sumIncomingCallsTextBox.Text + "\"");
+            sb.AppendLine("\"משך שיחות יוצאות:\",\"" + sumOutgoingCallsTextBox.Text + "\"");
+            sb.AppendLine("\"משך כל השיחות:\",\"" + sumAllCallsTextBox.Text + "\"");
+
 
             sb.AppendLine();
 

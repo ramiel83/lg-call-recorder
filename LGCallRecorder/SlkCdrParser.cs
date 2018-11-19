@@ -48,7 +48,7 @@ namespace LGCallRecorder
                             record.AccountCode = content.Trim();
                             break;
                         case "X9":
-                            record.DisconnectCause = ParseDisconnectCause(content);
+                            record.DisconnectCause = ParseDisconnectCause(content, record.CallType);
                             callRecords.Add(record);
                             record = new CallRecord();
                             break;
@@ -59,7 +59,7 @@ namespace LGCallRecorder
             return callRecords;
         }
 
-        private static DisconnectCause ParseDisconnectCause(string content)
+        private static DisconnectCause ParseDisconnectCause(string content, CallType calltype)
         {
             if (content.StartsWith("10"))
                 return DisconnectCause.NormalClearing;
@@ -78,10 +78,14 @@ namespace LGCallRecorder
                     return CallType.Outgoing;
                 case "I":
                     return CallType.Incoming;
-                case "E":
-                    return CallType.Conference;
+                case "H":
+                    return CallType.Hold;
                 case "R":
                     return CallType.Ring;
+                case "T":
+                    return CallType.Transferd;
+                case "t":
+                    return CallType.Transferd;
                 default:
                     return CallType.Unknown;
             }

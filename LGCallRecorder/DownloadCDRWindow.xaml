@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Lg Call Recorder" Height="600" Width="950">
     <Grid Background="#FFA9CEEE">
-        <Label x:Name="label" Content="נא הנתן - מתבצעת פניה למרכזייה להורדת נתוני רישום שיחות עדכניים "
+        <Label x:Name="label" Content="נא המתן - מתבצעת פניה למרכזייה להורדת נתוני רישומי שיחה עדכניים "
                Margin="152,189,142,0" VerticalAlignment="Top" FontSize="20" Foreground="#FF0562BF"
                FontFamily="Segoe UI Black" />
         <ProgressBar x:Name="DownloadProgressBar" Height="28" Margin="119,275,118,0" VerticalAlignment="Top"

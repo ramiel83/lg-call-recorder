@@ -5,8 +5,9 @@
         Group, //G
         Outgoing, //O
         Incoming, //I
-        Conference, //E
+        Hold, //H
         Ring, //R
+        Transferd,//T
         Unknown
     }
 }
