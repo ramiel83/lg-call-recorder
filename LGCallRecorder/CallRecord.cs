@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LGCallRecorder
 {
@@ -6,7 +7,15 @@ namespace LGCallRecorder
     {
         public int StationNumber { get; set; }
         public string CO { get; set; }
-        public TimeSpan Duration { get; set; }
+        public double DurationMilliseconds { get; set; }
+
+        [NotMapped]
+        public TimeSpan Duration
+        {
+            get => TimeSpan.FromMilliseconds(DurationMilliseconds);
+            set => DurationMilliseconds = value.TotalMilliseconds;
+        }
+
         public DateTime Start { get; set; }
         public CallType CallType { get; set; }
         public string Dialed { get; set; }

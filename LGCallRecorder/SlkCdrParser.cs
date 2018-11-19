@@ -6,6 +6,23 @@ namespace LGCallRecorder
 {
     internal static class SlkCdrParser
     {
+        public static CallRecord Parse(string line)
+        {
+            CallRecord record = new CallRecord();
+            record.StationNumber = int.Parse(line.Substring(0, 5));
+            record.CO = line.Substring(6, 3).Trim();
+            record.Duration = TimeSpan.Parse(line.Substring(10, 8));
+            record.Start = DateTime.Parse(line.Substring(19, 14));
+            record.CallType = ParseCallType(line.Substring(34, 1));
+            record.Dialed = line.Substring(35, 20).Trim();
+            string costSubstring = line.Substring(56, 23);
+            record.Cost = string.IsNullOrWhiteSpace(costSubstring) ? 0 : decimal.Parse(costSubstring);
+            record.AccountCode = line.Substring(80, 20).Trim();
+            record.DisconnectCause = ParseDisconnectCause(line.Substring(101, 2), record.CallType);
+
+            return record;
+        }
+
         public static IEnumerable<CallRecord> Parse(FileInfo slkFile)
         {
             List<CallRecord> callRecords = new List<CallRecord>();
